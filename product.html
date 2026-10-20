@@ -9,6 +9,7 @@
   <!-- Advanced Matching (step 2.3): must load before the Pixel code, which uses getStoredUserData() -->
   <script src="js/helpers.js"></script>
   <script src="js/advanced-matching.js"></script>
+  <script src="js/capi.js"></script> <!-- step 2.5: trackEvent() = Pixel event + CAPI copy -->
   <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -20,7 +21,7 @@
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '27002620367424', getStoredUserData()); // hashed match keys, see js/advanced-matching.js
-    fbq('track', 'PageView');
+    trackEvent('PageView', {}); // Pixel + CAPI copy with a shared event_id (js/capi.js)
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=27002620367424&ev=PageView&noscript=1"
@@ -103,7 +104,7 @@
         (function () {
       var d = window.PAGE_DATA;
       if (!d) return;
-      fbq('track', 'ViewContent', {
+      trackEvent('ViewContent', {
         content_ids:  d.content_ids,        // ['SKU-1001']
         content_name: d.content_name,
         content_type: 'product',
@@ -123,7 +124,7 @@
         var qty = Number(btn.getAttribute('data-qty')) || 1; // read at click time: tracks the quantity box
         var p = (window.PRODUCTS || []).filter(function (x) { return x.id === sku; })[0];
         if (!p) return;
-        fbq('track', 'AddToCart', {
+        trackEvent('AddToCart', {
           content_ids:  [sku],
           content_name: p.title,
           content_type: 'product',

@@ -23,6 +23,7 @@ data/products.js    window.PRODUCTS, the single source of truth for all 4 produc
 js/cart.js          cart (localStorage), order hand-off (sessionStorage), header counter
 js/helpers.js       generateEventId(), getCookie(), sha256()
 js/advanced-matching.js  normalize + hash match keys, external_id, _fbc capture (step 2.3)
+js/capi.js          trackEvent(): Pixel event + CAPI copy with a shared event_id; hardcoded test token (step 2.5)
 config.js           SITE_BASE_URL (used only for the catalog feed)
 feed/products.csv   catalog feed
 feed/build-feed.js  CSV builder used by feed/generate.html
@@ -161,15 +162,35 @@ These ids must match `content_ids` in your events and the `id` column in `feed/p
 | SKU-1003 | Terracotta Planter | 32.00 USD |
 | SKU-1004 | Dot Grid Notebook | 12.99 USD |
 
+## Conversions API (step 2.5)
+
+**Test-only shortcut:** GitHub Pages can't run server code, so the browser calls the Conversions
+API directly, with the access token **hardcoded in `js/capi.js`**. That token is public: anyone
+can read it in the page source. Never do this for a real business, where the token lives on a
+server. GitHub's secret scanning may also flag the token and get it revoked; if server events
+start failing with an auth error, mint a new token and replace `CAPI_ACCESS_TOKEN`.
+
+- **What's sent:** `trackEvent()` in `js/capi.js` fires `fbq('track', name, params, {eventID})`
+  and POSTs the same event to `graph.facebook.com/v21.0/<dataset>/events`. Each event carries
+  `event_id` (Purchase uses the order id), `event_time`, `action_source: "website"`,
+  `event_source_url`, the same `custom_data`, and `user_data` (hashed em, ph, fn, ln, ct, st, zp,
+  country, external_id, plus raw fbp/fbc and client_user_agent).
+- **Test Events:** `CAPI_TEST_EVENT_CODE` in `js/capi.js` routes events to Test Events. Codes
+  can change between sessions, so update it when that happens. Set it to `""` to send live.
+- **Check it:** open the browser console. Each event logs `CAPI <name> (<event_id>): {events_received: 1, ...}`.
+- **Limitation:** no `client_ip_address`, because the browser can't know its public IP.
+  Events Manager still labels these events as **Server**.
+
 ## Instrumentation progress
 
 - **Done:** Pixel base code + PageView (2.1); ViewContent, AddToCart, InitiateCheckout,
-  Purchase (2.2); Advanced Matching with hashed identifiers + fbp/fbc (2.3).
-- **Not yet:** Conversions API and event_id deduplication (2.4–2.6), domain verification (2.8).
+  Purchase (2.2); Advanced Matching with hashed identifiers + fbp/fbc (2.3); CAPI token (2.4);
+  CAPI events sent from the browser, sharing event_id with the Pixel (2.5).
+- **Not yet:** confirming deduplication in Events Manager (2.6), domain verification (2.8).
 
 ## What is deliberately missing
 
 - **No server**: static files only; "orders" live in your browser's `sessionStorage`.
 - **No payments**: no card fields, nothing is charged. (Only hashed checkout fields leave the
   browser, with Pixel events.)
-- No analytics or external requests other than the Pixel (no CDNs, fonts, or remote images).
+- No analytics or external requests other than the Pixel and the Conversions API (no CDNs, fonts, or remote images).

@@ -9,6 +9,7 @@
   <!-- Advanced Matching (step 2.3): must load before the Pixel code, which uses getStoredUserData() -->
   <script src="js/helpers.js"></script>
   <script src="js/advanced-matching.js"></script>
+  <script src="js/capi.js"></script> <!-- step 2.5: trackEvent() = Pixel event + CAPI copy -->
    <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -20,7 +21,7 @@
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '27002620367424', getStoredUserData()); // hashed match keys, see js/advanced-matching.js
-    fbq('track', 'PageView');
+    trackEvent('PageView', {}); // Pixel + CAPI copy with a shared event_id (js/capi.js)
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=27002620367424&ev=PageView&noscript=1"
@@ -102,14 +103,14 @@
       var key = 'fb_purchase_sent_' + d.order_id;
       if (sessionStorage.getItem(key)) return;
 
-      fbq('track', 'Purchase', {
+      trackEvent('Purchase', {
         content_ids:  d.content_ids,
         content_type: 'product',
         contents:     d.contents,
         num_items:    d.num_items,
         value:        Number(d.value),
         currency:     d.currency
-      });
+      }, d.order_id); // event_id = order id: one order can only ever count once
 
       sessionStorage.setItem(key, '1');
     })();
