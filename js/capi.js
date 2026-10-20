@@ -13,7 +13,7 @@ var CAPI_GRAPH_VERSION = "v21.0";
 var CAPI_ACCESS_TOKEN = "EAAAXYFttG74BSzDoHf5g9V9R2DgLBuCCVszf4ZBb5CgGDtyGTVASii0x2asfcqfhoKz3H5Qr8ueAs1HFRcxDo9ZB1Un37w7gMnFBFLzadIKN3pc2piDZCJyVhsHZA1gVgQ4XQVZCDjZA0K8Al09nYgLDYByitxHzBZCCkiwjUVg2AAkrN9eKkC2cXJyvGsYImqmfTUrdp6pPmqT7NGeIbJPnvb63Tmox0EGN19qh8YIY3YZD";
 // From Events Manager > Test Events. Codes can change between sessions: update it when it does.
 // Set to "" to send events to the live dataset instead of Test Events.
-var CAPI_TEST_EVENT_CODE = "TEST78647";
+var CAPI_TEST_EVENT_CODE = "";
 
 // Fires a Pixel event AND its CAPI copy with one shared event_id, so Meta can deduplicate
 // them (step 2.6). Pass an eventId to choose it yourself (e.g. the order id for Purchase);
