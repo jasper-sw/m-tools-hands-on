@@ -23,7 +23,7 @@ function buildFeedCsv(products, baseUrl) {
       p.condition,
       p.price.toFixed(2) + " " + p.currency,       // e.g. "18.00 USD"
       baseUrl + "/product.html?id=" + encodeURIComponent(p.id),
-      baseUrl + "/images/" + p.id + ".svg",        // standalone copy of the inline SVG
+      baseUrl + "/images/" + p.id + ".png",        // PNG copy of the inline SVG (catalogs need JPG/PNG)
       p.brand,
       p.category
     ].map(csvField).join(",");

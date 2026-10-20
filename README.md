@@ -77,14 +77,9 @@ If the repo is ever renamed or forked:
 ### Image tradeoff
 
 The pages show product images as **inline SVG data URIs** built in `data/products.js`, so the
-store makes zero image requests. A catalog feed needs a real, fetchable `image_link`, so the
-same SVG markup is also saved as standalone files in `images/SKU-xxxx.svg`, and the feed points
-there. If you change an image in `products.js`, update the matching file in `images/` too.
-
-**Heads-up:** catalog ingestion generally expects JPG or PNG images, so the SVG `image_link`s
-may be rejected or show as missing images. If that happens, export each SVG as a 600×600 PNG
-with any image editor, save them as `images/SKU-xxxx.png`, change `".svg"` to `".png"` in
-`feed/build-feed.js`, and regenerate the feed.
+store makes zero image requests. Catalogs need a real, fetchable JPG or PNG `image_link`, so each
+SVG is also saved as `images/SKU-xxxx.svg`, and rendered to a 600×600 `images/SKU-xxxx.png` that
+the feed points to. If you change an image in `products.js`, update both files in `images/` too.
 
 ## Where each event goes
 
