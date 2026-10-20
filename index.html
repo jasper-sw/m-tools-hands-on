@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All products | Fernhollow Goods (demo store)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- ===== META PIXEL BASE CODE GOES HERE (step 2.1) ===== -->
+  <!-- ===== DOMAIN VERIFICATION META TAG GOES HERE (step 2.8) ===== -->
+</head>
+<body>
+  <div class="demo-banner">DEMO STORE — TEST ONLY — NOT A REAL BUSINESS, NO REAL PAYMENTS ACCEPTED</div>
+  <header class="site-header">
+    <a class="logo" href="index.html">Fernhollow Goods</a>
+    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+  </header>
+
+  <main>
+    <h1>All products</h1>
+    <div id="product-grid" class="product-grid"></div>
+  </main>
+
+  <script src="data/products.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    // Render one card per product. Each card links to product.html?id=<SKU>.
+    document.getElementById("product-grid").innerHTML = window.PRODUCTS.map(function (p) {
+      return (
+        '<a class="card" href="product.html?id=' + encodeURIComponent(p.id) + '" data-sku="' + p.id + '">' +
+          '<img src="' + p.image + '" alt="' + p.title + '">' +
+          '<h2>' + p.title + '</h2>' +
+          '<p class="price">' + formatPrice(p.price, p.currency) + '</p>' +
+        '</a>'
+      );
+    }).join("");
+  </script>
+
+  <script>
+    // ===== INSTRUMENTATION: index.html (product listing) =====
+    // No extra standard event is required here: PageView is fired by the Pixel base code in <head>.
+    // Each product card is an <a class="card"> with a data-sku attribute, if you want to experiment.
+    // Helpers available: generateEventId(), getCookie(name)  (js/helpers.js)
+  </script>
+</body>
+</html>

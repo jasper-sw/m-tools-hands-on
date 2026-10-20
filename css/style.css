@@ -1,0 +1,91 @@
+/* css/style.css: the only stylesheet. Plain and minimal on purpose. */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: #222;
+  background: #fafafa;
+  line-height: 1.5;
+}
+
+a { color: #2a5db0; }
+
+main { max-width: 960px; margin: 0 auto; padding: 1rem; }
+
+/* Test-only warning shown at the top of every page. */
+.demo-banner {
+  background: #ffd400;
+  color: #000;
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem;
+  border-bottom: 3px solid #000;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+.logo { font-size: 1.25rem; font-weight: bold; color: #222; text-decoration: none; }
+
+/* Listing page */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.card {
+  display: block;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+.card:hover { border-color: #999; }
+.card img { width: 100%; height: auto; display: block; }
+.card h2 { font-size: 1rem; margin: 0.5rem 0 0; }
+
+/* Product page */
+.product-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.product-detail img { width: 100%; height: auto; border: 1px solid #ddd; }
+@media (max-width: 640px) { .product-detail { grid-template-columns: 1fr; } }
+
+.price { font-weight: bold; margin: 0.25rem 0; }
+.muted { color: #666; font-size: 0.85rem; }
+.notice { background: #eef6ee; border: 1px solid #b9d8b9; padding: 0.5rem 0.75rem; border-radius: 4px; }
+
+input[type="number"] { width: 4.5rem; }
+
+button {
+  font: inherit;
+  padding: 0.5rem 1rem;
+  background: #222;
+  color: #fff;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:disabled { background: #aaa; cursor: not-allowed; }
+.link-button { background: none; color: #2a5db0; padding: 0; text-decoration: underline; }
+
+/* Cart / checkout / confirmation tables */
+.lines { width: 100%; border-collapse: collapse; background: #fff; }
+.lines th, .lines td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; }
+.subtotal { font-size: 1.1rem; }
+
+/* Checkout form */
+.checkout-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; max-width: 640px; }
+.checkout-form label { display: flex; flex-direction: column; font-size: 0.9rem; }
+.checkout-form input { font: inherit; padding: 0.4rem; }
+.checkout-form .muted, .checkout-form button { grid-column: 1 / -1; }
+
+/* Feed generator */
+textarea { width: 100%; font-family: monospace; font-size: 0.8rem; }

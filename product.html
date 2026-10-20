@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product | Fernhollow Goods (demo store)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- ===== META PIXEL BASE CODE GOES HERE (step 2.1) ===== -->
+  <!-- ===== DOMAIN VERIFICATION META TAG GOES HERE (step 2.8) ===== -->
+</head>
+<body>
+  <div class="demo-banner">DEMO STORE — TEST ONLY — NOT A REAL BUSINESS, NO REAL PAYMENTS ACCEPTED</div>
+  <header class="site-header">
+    <a class="logo" href="index.html">Fernhollow Goods</a>
+    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+  </header>
+
+  <main>
+    <p><a href="index.html">&larr; All products</a></p>
+    <div id="product-detail"></div>
+  </main>
+
+  <script src="data/products.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    // Read ?id=<SKU> from the URL and render that product.
+    var product = findProduct(new URLSearchParams(window.location.search).get("id"));
+    var detail = document.getElementById("product-detail");
+
+    // Normalized data for instrumentation. Stays null if the product is not found.
+    window.PAGE_DATA = null;
+
+    if (!product) {
+      detail.innerHTML = '<h1>Product not found</h1><p>Check the <code>?id=</code> in the URL.</p>';
+    } else {
+      document.title = product.title + " | Fernhollow Goods (demo store)";
+      detail.innerHTML =
+        '<div class="product-detail">' +
+          '<img src="' + product.image + '" alt="' + product.title + '">' +
+          '<div>' +
+            '<h1>' + product.title + '</h1>' +
+            '<p class="price">' + formatPrice(product.price, product.currency) + '</p>' +
+            '<p>' + product.description + '</p>' +
+            '<p class="muted">SKU: ' + product.id + ' &middot; Brand: ' + product.brand +
+              ' &middot; ' + product.availability + ' &middot; ' + product.condition + '</p>' +
+            '<p class="muted">Category: ' + product.category + '</p>' +
+            '<label>Quantity <input type="number" id="qty" min="1" value="1"></label> ' +
+            '<button id="add-to-cart-btn" data-sku="' + product.id + '" data-qty="1">Add to cart</button>' +
+            '<p id="added-msg" class="notice" hidden>Added to cart. <a href="cart.html">View cart</a></p>' +
+          '</div>' +
+        '</div>';
+
+      window.PAGE_DATA = {
+        content_ids: [product.id],
+        content_name: product.title,
+        content_type: "product",
+        value: product.price,
+        currency: product.currency
+      };
+
+      var qtyInput = document.getElementById("qty");
+      var addButton = document.getElementById("add-to-cart-btn");
+
+      // Keep the button's data-qty in sync with the quantity box.
+      qtyInput.addEventListener("input", function () {
+        addButton.dataset.qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+      });
+
+      // Stays on this page after adding, so any click listener you attach has time to run.
+      addButton.addEventListener("click", function () {
+        addToCart(product.id, Number(addButton.dataset.qty));
+        document.getElementById("added-msg").hidden = false;
+      });
+    }
+  </script>
+
+  <script>
+    // ===== INSTRUMENTATION: product.html =====
+    // 1) Fire ViewContent here (on page load).
+    //    Available: window.PAGE_DATA (content_ids, content_name, content_type, value, currency)
+    //    window.PAGE_DATA is null if ?id= is missing or unknown; do not fire in that case.
+    // 2) Fire AddToCart when #add-to-cart-btn is clicked.
+    //    The button has data-sku and data-qty (data-qty tracks the quantity box).
+    //    Cart value for the event = window.PAGE_DATA.value * Number(button.dataset.qty)
+    // Helpers available: generateEventId(), getCookie(name)  (js/helpers.js)
+  </script>
+</body>
+</html>

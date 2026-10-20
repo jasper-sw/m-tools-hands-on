@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cart | Fernhollow Goods (demo store)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- ===== META PIXEL BASE CODE GOES HERE (step 2.1) ===== -->
+  <!-- ===== DOMAIN VERIFICATION META TAG GOES HERE (step 2.8) ===== -->
+</head>
+<body>
+  <div class="demo-banner">DEMO STORE — TEST ONLY — NOT A REAL BUSINESS, NO REAL PAYMENTS ACCEPTED</div>
+  <header class="site-header">
+    <a class="logo" href="index.html">Fernhollow Goods</a>
+    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+  </header>
+
+  <main>
+    <h1>Your cart</h1>
+    <div id="cart-contents"></div>
+    <p class="subtotal">Subtotal: <strong id="subtotal"></strong></p>
+    <button id="checkout-btn" data-sku="" data-qty="">Proceed to checkout</button>
+  </main>
+
+  <script src="data/products.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    var contents = document.getElementById("cart-contents");
+    var checkoutButton = document.getElementById("checkout-btn");
+
+    // Re-draws the cart and refreshes window.PAGE_DATA + the button's data attributes.
+    // Called on load and after every quantity change / removal.
+    function render() {
+      var lines = cartLines();
+      var summary = cartSummary();
+
+      window.PAGE_DATA = summary;
+      checkoutButton.dataset.sku = summary.content_ids.join(",");
+      checkoutButton.dataset.qty = summary.contents.map(function (c) { return c.quantity; }).join(",");
+      checkoutButton.disabled = lines.length === 0;
+      document.getElementById("subtotal").textContent = formatPrice(summary.value, summary.currency);
+
+      if (lines.length === 0) {
+        contents.innerHTML = '<p>Your cart is empty. <a href="index.html">Browse products</a></p>';
+        return;
+      }
+
+      contents.innerHTML =
+        '<table class="lines">' +
+          '<tr><th>Product</th><th>Price</th><th>Quantity</th><th>Line total</th><th></th></tr>' +
+          lines.map(function (l) {
+            var p = l.product;
+            return (
+              '<tr>' +
+                '<td><a href="product.html?id=' + encodeURIComponent(p.id) + '">' + p.title + '</a>' +
+                  '<div class="muted">' + p.id + '</div></td>' +
+                '<td>' + formatPrice(p.price, p.currency) + '</td>' +
+                '<td><input type="number" min="0" value="' + l.quantity + '" data-sku="' + p.id + '" class="qty"></td>' +
+                '<td>' + formatPrice(p.price * l.quantity, p.currency) + '</td>' +
+                '<td><button class="remove link-button" data-sku="' + p.id + '">Remove</button></td>' +
+              '</tr>'
+            );
+          }).join("") +
+        '</table>';
+    }
+
+    // Quantity changes (0 removes the line).
+    contents.addEventListener("change", function (e) {
+      if (e.target.classList.contains("qty")) {
+        setQuantity(e.target.dataset.sku, parseInt(e.target.value, 10) || 0);
+        render();
+      }
+    });
+
+    // Remove buttons.
+    contents.addEventListener("click", function (e) {
+      if (e.target.classList.contains("remove")) {
+        removeFromCart(e.target.dataset.sku);
+        render();
+      }
+    });
+
+    checkoutButton.addEventListener("click", function () {
+      window.location.href = "checkout.html";
+    });
+
+    render();
+  </script>
+
+  <script>
+    // ===== INSTRUMENTATION: cart.html =====
+    // No standard event is required on page load here (PageView comes from the base code).
+    // Option: fire InitiateCheckout when #checkout-btn is clicked, INSTEAD of on checkout.html load.
+    //   Pick one place, not both. (The click navigates away immediately, so page load on
+    //   checkout.html is the more reliable choice.)
+    // Available: window.PAGE_DATA (content_ids, contents, num_items, value, currency),
+    //   kept up to date as quantities change.
+    // #checkout-btn has data-sku="SKU-A,SKU-B" and data-qty="2,1" (same order).
+    // Helpers available: generateEventId(), getCookie(name)  (js/helpers.js)
+  </script>
+</body>
+</html>

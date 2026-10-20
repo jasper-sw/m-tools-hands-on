@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feed generator | Fernhollow Goods (demo store)</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <!-- Utility page, not part of the shopping funnel: no Pixel insertion points here. -->
+</head>
+<body>
+  <div class="demo-banner">DEMO STORE — TEST ONLY — NOT A REAL BUSINESS, NO REAL PAYMENTS ACCEPTED</div>
+  <main>
+    <h1>Catalog feed generator</h1>
+    <p>
+      Builds <code>products.csv</code> from <code>data/products.js</code> using
+      <code>SITE_BASE_URL</code> from <code>config.js</code>, currently:
+      <strong id="base-url"></strong>
+    </p>
+    <p>Click download, then replace <code>feed/products.csv</code> in the repo with the downloaded file.</p>
+    <p><button id="download-btn">Download products.csv</button></p>
+    <textarea id="csv" rows="12" readonly></textarea>
+  </main>
+
+  <script src="../config.js"></script>
+  <script src="../data/products.js"></script>
+  <script src="build-feed.js"></script>
+  <script>
+    var csv = buildFeedCsv(window.PRODUCTS, SITE_BASE_URL);
+    document.getElementById("base-url").textContent = SITE_BASE_URL;
+    document.getElementById("csv").value = csv;
+
+    // Download as a file. Everything happens locally in the browser.
+    document.getElementById("download-btn").addEventListener("click", function () {
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+      link.download = "products.csv";
+      link.click();
+    });
+  </script>
+</body>
+</html>

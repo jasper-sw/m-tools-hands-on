@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout | Fernhollow Goods (demo store)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- ===== META PIXEL BASE CODE GOES HERE (step 2.1) ===== -->
+  <!-- ===== DOMAIN VERIFICATION META TAG GOES HERE (step 2.8) ===== -->
+</head>
+<body>
+  <div class="demo-banner">DEMO STORE — TEST ONLY — NOT A REAL BUSINESS, NO REAL PAYMENTS ACCEPTED</div>
+  <header class="site-header">
+    <a class="logo" href="index.html">Fernhollow Goods</a>
+    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+  </header>
+
+  <main>
+    <h1>Checkout</h1>
+    <div id="order-summary"></div>
+
+    <p class="notice">
+      These details are <strong>fake test values</strong>. Nothing on this page is transmitted
+      anywhere: the "order" stays in this browser tab only. Do not enter real personal data.
+    </p>
+
+    <!-- Field ids are stable so you can read them for Advanced Matching practice. -->
+    <form id="checkout-form" class="checkout-form">
+      <label>First name <input id="first_name" value="Testy" required></label>
+      <label>Last name <input id="last_name" value="McTestface" required></label>
+      <label>Email <input id="email" type="email" value="test@example.com" required></label>
+      <label>Phone <input id="phone" type="tel" value="+1 (555) 555-0100" required></label>
+      <label>Street <input id="street" value="123 Example Street" required></label>
+      <label>City <input id="city" value="Anytown" required></label>
+      <label>State <input id="state" value="CA" required></label>
+      <label>ZIP <input id="zip" value="95555" required></label>
+      <label>Country <input id="country" value="US" required></label>
+      <p class="muted">Payment: none. This is a demo; no card details are requested or accepted.</p>
+      <button type="submit" id="place-order-btn" data-sku="" data-qty="">Place order</button>
+    </form>
+  </main>
+
+  <script src="data/products.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    var summary = cartSummary();
+    var placeOrderButton = document.getElementById("place-order-btn");
+
+    // Normalized cart data for instrumentation (same shape as cart.html).
+    window.PAGE_DATA = summary;
+    placeOrderButton.dataset.sku = summary.content_ids.join(",");
+    placeOrderButton.dataset.qty = summary.contents.map(function (c) { return c.quantity; }).join(",");
+
+    // Order summary (read-only).
+    var lines = cartLines();
+    if (lines.length === 0) {
+      document.getElementById("order-summary").innerHTML =
+        '<p>Your cart is empty. <a href="index.html">Browse products</a></p>';
+      placeOrderButton.disabled = true;
+    } else {
+      document.getElementById("order-summary").innerHTML =
+        '<table class="lines">' +
+          '<tr><th>Product</th><th>Quantity</th><th>Line total</th></tr>' +
+          lines.map(function (l) {
+            return '<tr><td>' + l.product.title + ' <span class="muted">' + l.product.id + '</span></td>' +
+              '<td>' + l.quantity + '</td>' +
+              '<td>' + formatPrice(l.product.price * l.quantity, l.product.currency) + '</td></tr>';
+          }).join("") +
+        '</table>' +
+        '<p class="subtotal">Total: <strong>' + formatPrice(summary.value, summary.currency) + '</strong></p>';
+    }
+
+    // Returns the current form values, raw and unhashed. Exposed for your Advanced Matching work.
+    function getCustomerFromForm() {
+      var ids = ["first_name", "last_name", "email", "phone", "street", "city", "state", "zip", "country"];
+      var customer = {};
+      ids.forEach(function (id) { customer[id] = document.getElementById(id).value; });
+      return customer;
+    }
+
+    // "Place order": no network call. Saves the order to sessionStorage, clears the cart,
+    // then goes to the confirmation page.
+    document.getElementById("checkout-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (cartLines().length === 0) return;
+      placeOrder(getCustomerFromForm());
+      window.location.href = "confirmation.html";
+    });
+  </script>
+
+  <script>
+    // ===== INSTRUMENTATION: checkout.html =====
+    // 1) Fire InitiateCheckout here (on page load).
+    //    Available: window.PAGE_DATA (content_ids, contents, num_items, value, currency)
+    //    If you chose to fire it on cart.html's #checkout-btn click instead, don't fire it here too.
+    // 2) Advanced Matching practice: getCustomerFromForm() returns the raw, unhashed form values
+    //    { first_name, last_name, email, phone, street, city, state, zip, country }.
+    //    Inputs have stable ids (#email, #phone, ...).
+    // #place-order-btn has data-sku and data-qty. Clicking it navigates away immediately,
+    //    so fire Purchase on confirmation.html, not here.
+    // Helpers available: generateEventId(), getCookie(name)  (js/helpers.js)
+  </script>
+</body>
+</html>

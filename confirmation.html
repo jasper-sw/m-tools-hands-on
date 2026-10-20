@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order confirmed | Fernhollow Goods (demo store)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- ===== META PIXEL BASE CODE GOES HERE (step 2.1) ===== -->
+  <!-- ===== DOMAIN VERIFICATION META TAG GOES HERE (step 2.8) ===== -->
+</head>
+<body>
+  <div class="demo-banner">DEMO STORE — TEST ONLY — NOT A REAL BUSINESS, NO REAL PAYMENTS ACCEPTED</div>
+  <header class="site-header">
+    <a class="logo" href="index.html">Fernhollow Goods</a>
+    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+  </header>
+
+  <main>
+    <div id="confirmation"></div>
+  </main>
+
+  <script src="data/products.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    // The order was saved to sessionStorage by checkout.html (see placeOrder in js/cart.js).
+    var order = readLastOrder();
+    var box = document.getElementById("confirmation");
+
+    // Normalized data for instrumentation. Both stay null if there is no order in this tab.
+    window.ORDER_DATA = null;
+    window.CUSTOMER_DATA = null;
+
+    if (!order) {
+      box.innerHTML = '<h1>No recent order</h1><p>Place an order first. <a href="index.html">Browse products</a></p>';
+    } else {
+      window.ORDER_DATA = {
+        order_id: order.order_id,
+        content_ids: order.content_ids,
+        contents: order.contents,
+        num_items: order.num_items,
+        value: order.value,
+        currency: order.currency
+      };
+      window.CUSTOMER_DATA = order.customer; // raw, unhashed fake form values
+
+      box.innerHTML =
+        '<h1>Thank you! (demo order, nothing was charged)</h1>' +
+        '<p>Order ID: <strong id="order-id">' + order.order_id + '</strong></p>' +
+        '<table class="lines">' +
+          '<tr><th>Product</th><th>Price</th><th>Quantity</th><th>Line total</th></tr>' +
+          order.contents.map(function (c) {
+            var p = findProduct(c.id);
+            return '<tr><td>' + (p ? p.title : c.id) + ' <span class="muted">' + c.id + '</span></td>' +
+              '<td>' + formatPrice(c.item_price, order.currency) + '</td>' +
+              '<td>' + c.quantity + '</td>' +
+              '<td>' + formatPrice(c.item_price * c.quantity, order.currency) + '</td></tr>';
+          }).join("") +
+        '</table>' +
+        '<p class="subtotal">Total: <strong>' + formatPrice(order.value, order.currency) + '</strong></p>' +
+        '<p class="muted">Ship to (fake): ' + order.customer.first_name + ' ' + order.customer.last_name +
+          ', ' + order.customer.city + ', ' + order.customer.state + ' ' + order.customer.zip + '</p>' +
+        '<p><a href="index.html">Continue shopping</a></p>';
+    }
+  </script>
+
+  <script>
+    // ===== INSTRUMENTATION: confirmation.html =====
+    // Fire Purchase here (on page load).
+    // Available: window.ORDER_DATA (order_id, content_ids, contents, num_items, value, currency)
+    //            window.CUSTOMER_DATA (raw, unhashed fake form values, for Advanced Matching:
+    //              first_name, last_name, email, phone, street, city, state, zip, country)
+    // Both are null if there is no order in this tab; do not fire in that case.
+    // Note: reloading this page shows the same order again (sessionStorage), so think about
+    //   what that means for duplicate Purchase events.
+    // Helpers available: generateEventId(), getCookie(name)  (js/helpers.js)
+  </script>
+</body>
+</html>
