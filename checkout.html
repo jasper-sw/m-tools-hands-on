@@ -111,6 +111,18 @@
     // 1) Fire InitiateCheckout here (on page load).
     //    Available: window.PAGE_DATA (content_ids, contents, num_items, value, currency)
     //    If you chose to fire it on cart.html's #checkout-btn click instead, don't fire it here too.
+    (function () {
+      var d = window.PAGE_DATA;
+      if (!d || d.num_items === 0) return; // PAGE_DATA is never null here; an empty cart has num_items 0
+      fbq('track', 'InitiateCheckout', {
+        content_ids:  d.content_ids,
+        content_type: 'product',
+        contents:     d.contents,          // [{id, quantity, item_price}]
+        num_items:    d.num_items,
+        value:        Number(d.value),
+        currency:     d.currency
+      });
+    })();
     // 2) Advanced Matching practice: getCustomerFromForm() returns the raw, unhashed form values
     //    { first_name, last_name, email, phone, street, city, state, zip, country }.
     //    Inputs have stable ids (#email, #phone, ...).

@@ -91,6 +91,25 @@
     // Note: reloading this page shows the same order again (sessionStorage), so think about
     //   what that means for duplicate Purchase events.
     // Helpers available: generateEventId(), getCookie(name)  (js/helpers.js)
+    (function () {
+      var d = window.ORDER_DATA;
+      if (!d || !d.order_id) return;
+
+      // Guard: don't re-fire Purchase if the page is reloaded
+      var key = 'fb_purchase_sent_' + d.order_id;
+      if (sessionStorage.getItem(key)) return;
+
+      fbq('track', 'Purchase', {
+        content_ids:  d.content_ids,
+        content_type: 'product',
+        contents:     d.contents,
+        num_items:    d.num_items,
+        value:        Number(d.value),
+        currency:     d.currency
+      });
+
+      sessionStorage.setItem(key, '1');
+    })();
   </script>
 </body>
 </html>

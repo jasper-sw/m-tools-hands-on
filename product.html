@@ -98,9 +98,38 @@
     //    Available: window.PAGE_DATA (content_ids, content_name, content_type, value, currency)
     //    window.PAGE_DATA is null if ?id= is missing or unknown; do not fire in that case.
     // 2) Fire AddToCart when #add-to-cart-btn is clicked.
+        (function () {
+      var d = window.PAGE_DATA;
+      if (!d) return;
+      fbq('track', 'ViewContent', {
+        content_ids:  d.content_ids,        // ['SKU-1001']
+        content_name: d.content_name,
+        content_type: 'product',
+        value:        Number(d.value),
+        currency:     d.currency
+      });
+    })();
     //    The button has data-sku and data-qty (data-qty tracks the quantity box).
     //    Cart value for the event = window.PAGE_DATA.value * Number(button.dataset.qty)
     // Helpers available: generateEventId(), getCookie(name)  (js/helpers.js)
+    (function () {
+      var btn = document.getElementById('add-to-cart-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var sku = btn.getAttribute('data-sku');
+        var qty = Number(btn.getAttribute('data-qty')) || 1; // read at click time: tracks the quantity box
+        var p = (window.PRODUCTS || []).filter(function (x) { return x.id === sku; })[0];
+        if (!p) return;
+        fbq('track', 'AddToCart', {
+          content_ids:  [sku],
+          content_name: p.title,
+          content_type: 'product',
+          contents:     [{ id: sku, quantity: qty, item_price: Number(p.price) }],
+          value:        Math.round(Number(p.price) * qty * 100) / 100, // avoid float noise like 38.970000000000006
+          currency:     p.currency
+        });
+      });
+    })();
   </script>
 </body>
 </html>
