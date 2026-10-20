@@ -1,6 +1,7 @@
 // js/helpers.js
-// Utilities for YOUR instrumentation work. The store itself never calls these.
-// Loaded on every page, so they are available inside each page's instrumentation <script>.
+// Utilities for instrumentation work. The store itself never calls these.
+// Loaded in <head> on every page (before the Pixel base code), so they are available
+// everywhere: in js/advanced-matching.js, the base code, and each instrumentation <script>.
 
 // Returns a random UUID-style string. Use the SAME value as `eventID` in the browser
 // event and `event_id` in the matching server (CAPI) event so the two can be deduplicated.
@@ -24,16 +25,12 @@ function getCookie(name) {
   return match ? decodeURIComponent(match.slice(prefix.length)) : null;
 }
 
-// ---------------------------------------------------------------------------
-// TODO (Advanced Matching): SHA-256 helper, intentionally NOT implemented.
-//
-// - Normalize each value before hashing (that is part of the exercise).
-// - The browser has this built in: crypto.subtle.digest("SHA-256", bytes)
-//   returns a Promise<ArrayBuffer>. Encode the input with new TextEncoder().encode(str)
-//   and convert the result to a lowercase hex string.
-// - crypto.subtle only exists in secure contexts (https:// or localhost).
-//
-// async function sha256(value) {
-//   // TODO: implement me
-// }
-// ---------------------------------------------------------------------------
+// Returns a Promise for the SHA-256 hash of a string, as lowercase hex (64 chars).
+// Normalize values BEFORE hashing (see js/advanced-matching.js). crypto.subtle only exists
+// in secure contexts (https:// or localhost), so callers should check for it first.
+async function sha256(value) {
+  var digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest))
+    .map(function (b) { return b.toString(16).padStart(2, "0"); })
+    .join("");
+}

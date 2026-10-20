@@ -6,8 +6,9 @@ personal or confidential data. The checkout form is prefilled with obviously fak
 (`test@example.com`, `+1 (555) 555-0100`, `123 Example Street`, ...), and placing an "order" only
 writes to your own browser's storage.
 
-The store is plain HTML + one CSS file + vanilla JS. No build step, no dependencies, no server,
-and **no tracking code of any kind**. Adding the tracking is your exercise.
+The store is plain HTML + one CSS file + vanilla JS. No build step, no dependencies, no server.
+It shipped with no tracking code; the instrumentation is added step by step (see
+"Instrumentation progress" below).
 
 ## File tree
 
@@ -20,7 +21,8 @@ confirmation.html   order confirmation (Purchase goes here)
 css/style.css       the only stylesheet
 data/products.js    window.PRODUCTS, the single source of truth for all 4 products
 js/cart.js          cart (localStorage), order hand-off (sessionStorage), header counter
-js/helpers.js       generateEventId(), getCookie(), SHA-256 TODO stub (unused by the site)
+js/helpers.js       generateEventId(), getCookie(), sha256()
+js/advanced-matching.js  normalize + hash match keys, external_id, _fbc capture (step 2.3)
 config.js           SITE_BASE_URL (used only for the catalog feed)
 feed/products.csv   catalog feed
 feed/build-feed.js  CSV builder used by feed/generate.html
@@ -126,8 +128,27 @@ window.CUSTOMER_DATA = { first_name, last_name, email, phone, street, city, stat
 Multi-item buttons (`#checkout-btn`, `#place-order-btn`) carry comma-separated, same-order lists:
 `data-sku="SKU-1001,SKU-1003" data-qty="2,1"`.
 
-Helpers in `js/helpers.js` (loaded on every page): `generateEventId()` for browser/server
-deduplication, `getCookie("_fbp")` / `getCookie("_fbc")`, and a commented-out `sha256` TODO.
+Helpers in `js/helpers.js` (loaded in `<head>` on every page): `generateEventId()` for
+browser/server deduplication, `getCookie("_fbp")` / `getCookie("_fbc")`, and `sha256(str)`.
+
+## Advanced Matching (step 2.3)
+
+`js/advanced-matching.js` loads in `<head>` before the Pixel code. The base code calls
+`fbq('init', PIXEL_ID, getStoredUserData())`.
+
+- **Why hashes are stored:** `fbq('init')` runs before the page loads, but browser hashing is
+  asynchronous. So the checkout page normalizes and hashes the form fields (on load and on every
+  edit) and stores **only the SHA-256 hashes** in localStorage (`demo_store_user_data`). Every
+  later page passes them to `init`, including the Purchase on `confirmation.html`.
+- **Keys sent:** `em, ph, fn, ln, ct, st, zp, country, external_id`. Normalization rules are
+  commented in the file (e.g. phone `+1 (555) 555-0100` → `15555550100`).
+- **external_id:** a random id per browser (`demo_store_external_id`), standing in for a customer
+  id. It's sent hashed, from the visitor's second page view onward.
+- **fbc / fbp:** visiting with `?fbclid=...` writes the `_fbc` cookie as `fb.1.<ms>.<fbclid>`.
+  `_fbp` is set by the Pixel itself.
+- **For CAPI (step 2.5):** `getUserDataForCapi()` returns the same hashed keys plus raw
+  `fbp`/`fbc`. Send exactly these values server-side.
+- Automatic Advanced Matching is also on (Events Manager → dataset Settings).
 
 ## Products (quick reference)
 
@@ -140,11 +161,15 @@ These ids must match `content_ids` in your events and the `id` column in `feed/p
 | SKU-1003 | Terracotta Planter | 32.00 USD |
 | SKU-1004 | Dot Grid Notebook | 12.99 USD |
 
+## Instrumentation progress
+
+- **Done:** Pixel base code + PageView (2.1); ViewContent, AddToCart, InitiateCheckout,
+  Purchase (2.2); Advanced Matching with hashed identifiers + fbp/fbc (2.3).
+- **Not yet:** Conversions API and event_id deduplication (2.4–2.6), domain verification (2.8).
+
 ## What is deliberately missing
 
-- **No Pixel**: no base code, no `fbevents.js`, no events.
-- **No Conversions API**: no server-side calls of any kind.
-- **No hashing**: the SHA-256 helper is a TODO stub.
 - **No server**: static files only; "orders" live in your browser's `sessionStorage`.
-- **No payments**: no card fields, nothing is charged, nothing is transmitted.
-- No analytics, cookies, or external requests of any kind (no CDNs, fonts, or remote images).
+- **No payments**: no card fields, nothing is charged. (Only hashed checkout fields leave the
+  browser, with Pixel events.)
+- No analytics or external requests other than the Pixel (no CDNs, fonts, or remote images).

@@ -6,6 +6,9 @@
   <title>All products | Fernhollow Goods (demo store)</title>
   <link rel="stylesheet" href="css/style.css">
   <!-- ===== META PIXEL BASE CODE GOES HERE (step 2.1) ===== -->
+  <!-- Advanced Matching (step 2.3): must load before the Pixel code, which uses getStoredUserData() -->
+  <script src="js/helpers.js"></script>
+  <script src="js/advanced-matching.js"></script>
    <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -16,7 +19,7 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '27002620367424');
+    fbq('init', '27002620367424', getStoredUserData()); // hashed match keys, see js/advanced-matching.js
     fbq('track', 'PageView');
     </script>
     <noscript><img height="1" width="1" style="display:none"
@@ -38,7 +41,6 @@
   </main>
 
   <script src="data/products.js"></script>
-  <script src="js/helpers.js"></script>
   <script src="js/cart.js"></script>
   <script>
     // Render one card per product. Each card links to product.html?id=<SKU>.
@@ -57,7 +59,8 @@
     // ===== INSTRUMENTATION: index.html (product listing) =====
     // No extra standard event is required here: PageView is fired by the Pixel base code in <head>.
     // Each product card is an <a class="card"> with a data-sku attribute, if you want to experiment.
-    // Helpers available: generateEventId(), getCookie(name)  (js/helpers.js)
+    // Helpers available: generateEventId(), getCookie(name), sha256(str)  (js/helpers.js)
+    //   getStoredUserData(), getUserDataForCapi()  (js/advanced-matching.js)
   </script>
 </body>
 </html>
