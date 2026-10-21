@@ -109,15 +109,15 @@ Fire InitiateCheckout in **one** place only. Data shapes:
 ```js
 // product.html
 window.PAGE_DATA  = { content_ids: ["SKU-1001"], content_name: "Speckled Stoneware Mug",
-                      content_type: "product", value: 18, currency: "USD" }
+                      content_type: "product", value: 22, currency: "USD" }
 // cart.html and checkout.html (cart.html keeps it current as quantities change)
 window.PAGE_DATA  = { content_ids: ["SKU-1001", "SKU-1003"],
-                      contents: [{ id: "SKU-1001", quantity: 2, item_price: 18 },
-                                 { id: "SKU-1003", quantity: 1, item_price: 32 }],
-                      num_items: 3, value: 68, currency: "USD" }
+                      contents: [{ id: "SKU-1001", quantity: 2, item_price: 22 },
+                                 { id: "SKU-1003", quantity: 1, item_price: 27 }],
+                      num_items: 3, value: 71, currency: "USD" }
 // confirmation.html
 window.ORDER_DATA = { order_id: "ORD-1760000000000-AB12", content_ids: [...], contents: [...],
-                      num_items: 3, value: 68, currency: "USD" }
+                      num_items: 3, value: 71, currency: "USD" }
 window.CUSTOMER_DATA = { first_name, last_name, email, phone, street, city, state, zip, country } // raw, unhashed
 ```
 
@@ -152,10 +152,10 @@ These ids must match `content_ids` in your events and the `id` column in `feed/p
 
 | id | title | price |
 |---|---|---|
-| SKU-1001 | Speckled Stoneware Mug | 18.00 USD |
-| SKU-1002 | Canvas Market Tote | 24.50 USD |
-| SKU-1003 | Terracotta Planter | 32.00 USD |
-| SKU-1004 | Dot Grid Notebook | 12.99 USD |
+| SKU-1001 | Speckled Stoneware Mug | 22.00 USD |
+| SKU-1002 | Canvas Market Tote | 29.50 USD |
+| SKU-1003 | Terracotta Planter | 27.00 USD |
+| SKU-1004 | Dot Grid Notebook | 14.99 USD |
 
 ## Conversions API (step 2.5)
 
