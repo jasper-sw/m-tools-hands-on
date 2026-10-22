@@ -80,7 +80,9 @@
               ' &middot; ' + product.availability + ' &middot; ' + product.condition + '</p>' +
             '<p class="muted">Category: ' + product.category + '</p>' +
             '<label>Quantity <input type="number" id="qty" min="1" value="1"></label> ' +
-            '<button id="add-to-cart-btn" data-sku="' + product.id + '" data-qty="1">Add to cart</button>' +
+            (product.availability === "out of stock" // can't be added, so no AddToCart either
+              ? '<button id="add-to-cart-btn" data-sku="' + product.id + '" data-qty="1" disabled>Out of stock</button>'
+              : '<button id="add-to-cart-btn" data-sku="' + product.id + '" data-qty="1">Add to cart</button>') +
             '<p id="added-msg" class="notice" hidden>Added to cart. <a href="../cart.html">View cart</a></p>' +
           '</div>' +
         '</div>';
