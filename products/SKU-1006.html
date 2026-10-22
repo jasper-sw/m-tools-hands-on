@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Striped Linen Tea Towel | Fernhollow Goods (demo store)</title>
+  <link rel="canonical" href="https://jasper-sw.github.io/m-tools-hands-on/products/SKU-1006.html">
+  <!-- Open Graph product tags for the pixel-based catalog. Written literally (crawlers don't run JS).
+       HAND-COPIED from data/products.js: if you change this product there, change it here too. -->
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="Striped Linen Tea Towel">
+  <meta property="og:description" content="A 20 x 28 inch tea towel in washed linen with a woven stripe and a hanging loop. Fictional demo product.">
+  <meta property="og:url" content="https://jasper-sw.github.io/m-tools-hands-on/products/SKU-1006.html">
+  <meta property="og:image" content="https://jasper-sw.github.io/m-tools-hands-on/images/SKU-1006.png">
+  <meta property="product:retailer_item_id" content="SKU-1006">
+  <meta property="product:brand" content="Fernhollow Goods">
+  <meta property="product:price:amount" content="12.50">
+  <meta property="product:price:currency" content="USD">
+  <meta property="product:availability" content="in stock">
+  <meta property="product:condition" content="new">
+  <link rel="stylesheet" href="../css/style.css">
+  <!-- ===== META PIXEL BASE CODE GOES HERE (step 2.1) ===== -->
+  <!-- Advanced Matching (step 2.3): must load before the Pixel code, which uses getStoredUserData() -->
+  <script src="../js/helpers.js"></script>
+  <script src="../js/advanced-matching.js"></script>
+  <script src="../js/capi.js"></script> <!-- step 2.5: trackEvent() = Pixel event + CAPI copy -->
+  <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '27002620367424', getStoredUserData()); // hashed match keys, see js/advanced-matching.js
+    trackEvent('PageView', {}); // Pixel + CAPI copy with a shared event_id (js/capi.js)
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=27002620367424&ev=PageView&noscript=1"
+    /></noscript>
+  <!-- End Meta Pixel Code -->
+  <!-- ===== DOMAIN VERIFICATION META TAG GOES HERE (step 2.8) ===== -->
+</head>
+<body>
+  <div class="demo-banner">DEMO STORE — TEST ONLY — NOT A REAL BUSINESS, NO REAL PAYMENTS ACCEPTED</div>
+  <header class="site-header">
+    <a class="logo" href="../index.html">Fernhollow Goods</a>
+    <a href="../cart.html">Cart (<span id="cart-count">0</span>)</a>
+  </header>
+
+  <main>
+    <p><a href="../index.html">&larr; All products</a></p>
+    <div id="product-detail"></div>
+  </main>
+
+  <script src="../data/products.js"></script>
+  <script src="../js/cart.js"></script>
+  <script>
+    // This page's product. The visible page and the events read data/products.js; only the
+    // Open Graph tags in <head> are a hand-written copy.
+    var product = findProduct("SKU-1006");
+    var detail = document.getElementById("product-detail");
+
+    // Normalized data for instrumentation. Stays null if the product is not found.
+    window.PAGE_DATA = null;
+
+    if (!product) {
+      detail.innerHTML = '<h1>Product not found</h1><p>SKU-1006 is missing from data/products.js.</p>';
+    } else {
+      detail.innerHTML =
+        '<div class="product-detail">' +
+          '<img src="' + product.image + '" alt="' + product.title + '">' +
+          '<div>' +
+            '<h1>' + product.title + '</h1>' +
+            '<p class="price">' + formatPrice(product.price, product.currency) + '</p>' +
+            '<p>' + product.description + '</p>' +
+            '<p class="muted">SKU: ' + product.id + ' &middot; Brand: ' + product.brand +
+              ' &middot; ' + product.availability + ' &middot; ' + product.condition + '</p>' +
+            '<p class="muted">Category: ' + product.category + '</p>' +
+            '<label>Quantity <input type="number" id="qty" min="1" value="1"></label> ' +
+            '<button id="add-to-cart-btn" data-sku="' + product.id + '" data-qty="1">Add to cart</button>' +
+            '<p id="added-msg" class="notice" hidden>Added to cart. <a href="../cart.html">View cart</a></p>' +
+          '</div>' +
+        '</div>';
+
+      window.PAGE_DATA = {
+        content_ids: [product.id],
+        content_name: product.title,
+        content_type: "product",
+        value: product.price,
+        currency: product.currency
+      };
+
+      var qtyInput = document.getElementById("qty");
+      var addButton = document.getElementById("add-to-cart-btn");
+
+      // Keep the button's data-qty in sync with the quantity box.
+      qtyInput.addEventListener("input", function () {
+        addButton.dataset.qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+      });
+
+      // Stays on this page after adding, so any click listener you attach has time to run.
+      addButton.addEventListener("click", function () {
+        addToCart(product.id, Number(addButton.dataset.qty));
+        document.getElementById("added-msg").hidden = false;
+      });
+    }
+  </script>
+
+  <script>
+    // ===== INSTRUMENTATION: products/SKU-1006.html =====
+    // 1) ViewContent on page load, from window.PAGE_DATA (null if the SKU is unknown: don't fire).
+    (function () {
+      var d = window.PAGE_DATA;
+      if (!d) return;
+      trackEvent('ViewContent', {
+        content_ids:  d.content_ids,        // ['SKU-1006']
+        content_name: d.content_name,
+        content_type: 'product',
+        value:        Number(d.value),
+        currency:     d.currency
+      });
+    })();
+    // 2) AddToCart when #add-to-cart-btn is clicked.
+    //    The button has data-sku and data-qty (data-qty tracks the quantity box).
+    //    Cart value for the event = price * Number(button.dataset.qty)
+    // Helpers available: generateEventId(), getCookie(name), sha256(str)  (js/helpers.js)
+    //   getStoredUserData(), getUserDataForCapi()  (js/advanced-matching.js)
+    (function () {
+      var btn = document.getElementById('add-to-cart-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var sku = btn.getAttribute('data-sku');
+        var qty = Number(btn.getAttribute('data-qty')) || 1; // read at click time: tracks the quantity box
+        var p = (window.PRODUCTS || []).filter(function (x) { return x.id === sku; })[0];
+        if (!p) return;
+        trackEvent('AddToCart', {
+          content_ids:  [sku],
+          content_name: p.title,
+          content_type: 'product',
+          contents:     [{ id: sku, quantity: qty, item_price: Number(p.price) }],
+          value:        Math.round(Number(p.price) * qty * 100) / 100, // avoid float noise like 38.970000000000006
+          currency:     p.currency
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

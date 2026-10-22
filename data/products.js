@@ -1,5 +1,5 @@
 // data/products.js
-// SINGLE SOURCE OF TRUTH for the 4 demo products. Every page reads window.PRODUCTS.
+// SINGLE SOURCE OF TRUTH for the 8 demo products. Every page reads window.PRODUCTS.
 // The `id` values are hardcoded SKUs and must stay identical to the `id` column in
 // feed/products.csv: catalog matching depends on content_ids === feed ids.
 
@@ -69,6 +69,54 @@
       brand: BRAND,
       category: "Office Supplies > General Office Supplies > Paper Products > Notebooks & Notepads",
       image: placeholderImage("SKU-1004", "Dot Grid Notebook", "#e3e8f3", "#6f86b8")
+    },
+    {
+      id: "SKU-1005",
+      title: "Beeswax Taper Candle Pair",
+      description: "Two 10 inch hand-dipped beeswax taper candles with cotton wicks. About 8 hours of burn time each. Fictional demo product.",
+      price: 18.00,
+      currency: "USD",
+      availability: "in stock",
+      condition: "new",
+      brand: BRAND,
+      category: "Home & Garden > Decor > Home Fragrances > Candles",
+      image: placeholderImage("SKU-1005", "Taper Candles", "#f7f0d9", "#d9b44a")
+    },
+    {
+      id: "SKU-1006",
+      title: "Striped Linen Tea Towel",
+      description: "A 20 x 28 inch tea towel in washed linen with a woven stripe and a hanging loop. Fictional demo product.",
+      price: 12.50,
+      currency: "USD",
+      availability: "in stock",
+      condition: "new",
+      brand: BRAND,
+      category: "Home & Garden > Linens & Bedding > Towels > Kitchen Towels",
+      image: placeholderImage("SKU-1006", "Linen Tea Towel", "#e9eef0", "#8fa9b5")
+    },
+    {
+      id: "SKU-1007",
+      title: "Walnut Cutting Board",
+      description: "A 16 x 10 inch end-grain walnut cutting board with a juice groove. Hand wash and oil occasionally. Fictional demo product.",
+      price: 45.00,
+      currency: "USD",
+      availability: "in stock",
+      condition: "new",
+      brand: BRAND,
+      category: "Home & Garden > Kitchen & Dining > Kitchen Tools & Utensils > Cutting Boards",
+      image: placeholderImage("SKU-1007", "Cutting Board", "#efe6dd", "#8a5a3b")
+    },
+    {
+      id: "SKU-1008",
+      title: "Merino Wool Throw",
+      description: "A 50 x 60 inch merino wool throw blanket with fringed edges, woven in a soft herringbone. Fictional demo product.",
+      price: 68.00,
+      currency: "USD",
+      availability: "in stock",
+      condition: "new",
+      brand: BRAND,
+      category: "Home & Garden > Linens & Bedding > Bedding > Blankets",
+      image: placeholderImage("SKU-1008", "Wool Throw", "#ece6f0", "#9b86b0")
     }
   ];
 })();

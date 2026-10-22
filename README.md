@@ -20,7 +20,7 @@ cart.html           cart
 checkout.html       fake checkout form
 confirmation.html   order confirmation (Purchase goes here)
 css/style.css       the only stylesheet
-data/products.js    window.PRODUCTS, the single source of truth for all 4 products
+data/products.js    window.PRODUCTS, the single source of truth for all 8 products
 js/cart.js          cart (localStorage), order hand-off (sessionStorage), header counter
 js/helpers.js       generateEventId(), getCookie(), sha256()
 js/advanced-matching.js  normalize + hash match keys, external_id, _fbc capture (step 2.3)
@@ -55,6 +55,8 @@ This repo is public on GitHub at
    **Actions** tab. The site will be at **https://jasper-sw.github.io/m-tools-hands-on/**.
 
 All links in the site are relative, so it works under the `/m-tools-hands-on/` subpath without changes.
+The one exception: the Open Graph tags and canonical link in `products/*.html` must be absolute
+URLs, so they hardcode the site URL (see "Changing the feed URL").
 
 The catalog feed will be live at
 `https://jasper-sw.github.io/m-tools-hands-on/feed/products.csv`, which you can use as a
@@ -67,13 +69,16 @@ scheduled feed URL.
 If the repo is ever renamed or forked:
 
 1. Edit that line (no trailing slash).
-2. **Regenerate `feed/products.csv`**. The CSV is a static file, so editing `config.js` alone
+2. **Update the product pages**: their `og:url`, `og:image` and canonical link hardcode the site URL
+   (macOS sed shown):
+   `sed -i '' 's#https://jasper-sw.github.io/m-tools-hands-on#https://NEW_USER.github.io/NEW_REPO#g' products/*.html`
+3. **Regenerate `feed/products.csv`**. The CSV is a static file, so editing `config.js` alone
    does not change it:
    - Open `feed/generate.html` in your browser, check the URL it shows, click
      **Download products.csv**, and replace `feed/products.csv` with the downloaded file; **or**
    - run a find-and-replace (macOS sed shown):
      `sed -i '' 's#https://jasper-sw.github.io/m-tools-hands-on#https://NEW_USER.github.io/NEW_REPO#g' feed/products.csv`
-3. Commit and push.
+4. Commit and push.
 
 ### Image tradeoff
 
@@ -112,7 +117,8 @@ when several formats are present, so a second format would add nothing but drift
 3. `images/<id>.svg` + `.png` if the image changed.
 
 To add a product, copy an existing `products/SKU-xxxx.html`, replace the old SKU everywhere in it,
-and update every Open Graph value. To remove one, delete its page as well. Quick check after an
+and update every Open Graph value. Keep product text free of `"`, `<` and `&`: the pages insert it
+into HTML and into the SVG image unescaped. To remove one, delete its page as well. Quick check after an
 edit: `grep -h 'product:price:amount' products/*.html` should list the same prices as `products.js`.
 
 ## Where each event goes
@@ -190,6 +196,10 @@ These ids must match `content_ids` in your events and the `id` column in `feed/p
 | SKU-1002 | Canvas Market Tote | 29.50 USD |
 | SKU-1003 | Terracotta Planter | 27.00 USD |
 | SKU-1004 | Dot Grid Notebook | 14.99 USD |
+| SKU-1005 | Beeswax Taper Candle Pair | 18.00 USD |
+| SKU-1006 | Striped Linen Tea Towel | 12.50 USD |
+| SKU-1007 | Walnut Cutting Board | 45.00 USD |
+| SKU-1008 | Merino Wool Throw | 68.00 USD |
 
 ## Conversions API (step 2.5)
 
