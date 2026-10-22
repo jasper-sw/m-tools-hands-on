@@ -73,7 +73,7 @@
             var p = l.product;
             return (
               '<tr>' +
-                '<td><a href="product.html?id=' + encodeURIComponent(p.id) + '">' + p.title + '</a>' +
+                '<td><a href="products/' + encodeURIComponent(p.id) + '.html">' + p.title + '</a>' +
                   '<div class="muted">' + p.id + '</div></td>' +
                 '<td>' + formatPrice(p.price, p.currency) + '</td>' +
                 '<td><input type="number" min="0" value="' + l.quantity + '" data-sku="' + p.id + '" class="qty"></td>' +

@@ -44,10 +44,10 @@
   <script src="data/products.js"></script>
   <script src="js/cart.js"></script>
   <script>
-    // Render one card per product. Each card links to product.html?id=<SKU>.
+    // Render one card per product. Each card links to its own page, products/<SKU>.html.
     document.getElementById("product-grid").innerHTML = window.PRODUCTS.map(function (p) {
       return (
-        '<a class="card" href="product.html?id=' + encodeURIComponent(p.id) + '" data-sku="' + p.id + '">' +
+        '<a class="card" href="products/' + encodeURIComponent(p.id) + '.html" data-sku="' + p.id + '">' +
           '<img src="' + p.image + '" alt="' + p.title + '">' +
           '<h2>' + p.title + '</h2>' +
           '<p class="price">' + formatPrice(p.price, p.currency) + '</p>' +

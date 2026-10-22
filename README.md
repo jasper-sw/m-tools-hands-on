@@ -14,7 +14,8 @@ It shipped with no tracking code; the instrumentation is added step by step (see
 
 ```
 index.html          product listing
-product.html        product detail (?id=SKU-xxxx)
+products/SKU-xxxx.html  one product page per SKU, with Open Graph tags for the pixel-based catalog
+product.html        retired: forwards old product.html?id=SKU-xxxx links to products/SKU-xxxx.html (no Pixel)
 cart.html           cart
 checkout.html       fake checkout form
 confirmation.html   order confirmation (Purchase goes here)
@@ -28,7 +29,7 @@ config.js           SITE_BASE_URL (used only for the catalog feed)
 feed/products.csv   catalog feed
 feed/build-feed.js  CSV builder used by feed/generate.html
 feed/generate.html  open in a browser to regenerate products.csv
-images/*.svg        standalone copies of the product images (for the feed's image_link)
+images/*.svg, *.png standalone copies of the product images (PNG = feed image_link and og:image)
 .nojekyll           tells GitHub Pages to serve files as-is
 ```
 
@@ -81,6 +82,39 @@ store makes zero image requests. Catalogs need a real, fetchable JPG or PNG `ima
 SVG is also saved as `images/SKU-xxxx.svg`, and rendered to a 600×600 `images/SKU-xxxx.png` that
 the feed points to. If you change an image in `products.js`, update both files in `images/` too.
 
+## Pixel-based catalog (Open Graph tags)
+
+Each product has one static page, `products/SKU-xxxx.html`, and that URL is the only one that
+fires the Pixel for the product. Its `<head>` carries Open Graph product tags written literally
+into the HTML, so Meta's crawler can read them when a PageView fires there:
+
+| Catalog field | Tag |
+|---|---|
+| id | `product:retailer_item_id` |
+| title | `og:title` |
+| description | `og:description` (max 500 characters, like every value) |
+| link | `og:url`: the page's own absolute URL, same as the feed's `link` |
+| image link | `og:image`: absolute URL of `images/SKU-xxxx.png` |
+| price | `product:price:amount` + `product:price:currency` |
+| availability | `product:availability` |
+| condition | `product:condition` |
+| brand | `product:brand` |
+
+`og:type` is `product`. Open Graph only, no JSON-LD or schema.org microdata: Open Graph wins
+when several formats are present, so a second format would add nothing but drift.
+
+**Keep the tags in sync by hand.** The visible page, the events and the cart all read
+`data/products.js`. The Open Graph block is a hand-written copy. When you change a product in
+`products.js`, update in the same commit:
+
+1. the Open Graph block (and `<title>`) in `products/<id>.html`;
+2. `feed/products.csv` (regenerate with `feed/generate.html`);
+3. `images/<id>.svg` + `.png` if the image changed.
+
+To add a product, copy an existing `products/SKU-xxxx.html`, replace the old SKU everywhere in it,
+and update every Open Graph value. To remove one, delete its page as well. Quick check after an
+edit: `grep -h 'product:price:amount' products/*.html` should list the same prices as `products.js`.
+
 ## Where each event goes
 
 Every page has these two empty comment lines in `<head>`:
@@ -98,8 +132,8 @@ set by the page script that runs just before that block, so they're ready when y
 |---|---|---|---|
 | all pages | PageView | base code in `<head>` | — |
 | `index.html` | (none beyond PageView) | — | — |
-| `product.html` | ViewContent | page load | `window.PAGE_DATA` (`null` if the SKU is unknown) |
-| `product.html` | AddToCart | click `#add-to-cart-btn` | `window.PAGE_DATA` + button `data-sku`, `data-qty` |
+| `products/SKU-xxxx.html` | ViewContent | page load | `window.PAGE_DATA` (`null` if the SKU is unknown) |
+| `products/SKU-xxxx.html` | AddToCart | click `#add-to-cart-btn` | `window.PAGE_DATA` + button `data-sku`, `data-qty` |
 | `cart.html` | (optional) InitiateCheckout | click `#checkout-btn` | `window.PAGE_DATA` + button `data-sku`, `data-qty` |
 | `checkout.html` | InitiateCheckout (recommended spot) | page load | `window.PAGE_DATA`; form values via `getCustomerFromForm()` |
 | `confirmation.html` | Purchase | page load | `window.ORDER_DATA`; customer via `window.CUSTOMER_DATA` (both `null` if no order) |
@@ -107,7 +141,7 @@ set by the page script that runs just before that block, so they're ready when y
 Fire InitiateCheckout in **one** place only. Data shapes:
 
 ```js
-// product.html
+// products/SKU-xxxx.html
 window.PAGE_DATA  = { content_ids: ["SKU-1001"], content_name: "Speckled Stoneware Mug",
                       content_type: "product", value: 22, currency: "USD" }
 // cart.html and checkout.html (cart.html keeps it current as quantities change)

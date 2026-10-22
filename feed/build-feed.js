@@ -22,7 +22,7 @@ function buildFeedCsv(products, baseUrl) {
       p.availability,
       p.condition,
       p.price.toFixed(2) + " " + p.currency,       // e.g. "18.00 USD"
-      baseUrl + "/product.html?id=" + encodeURIComponent(p.id),
+      baseUrl + "/products/" + encodeURIComponent(p.id) + ".html",  // same URL as the page's og:url
       baseUrl + "/images/" + p.id + ".png",        // PNG copy of the inline SVG (catalogs need JPG/PNG)
       p.brand,
       p.category
