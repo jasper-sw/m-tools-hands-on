@@ -225,9 +225,9 @@ start failing with an auth error, mint a new token and replace `CAPI_ACCESS_TOKE
 - **Done:** Pixel base code + PageView (2.1); ViewContent, AddToCart, InitiateCheckout,
   Purchase (2.2); Advanced Matching with hashed identifiers + fbp/fbc (2.3); CAPI token (2.4);
   CAPI events sent from the browser, sharing event_id with the Pixel (2.5).
-  Google Tag Manager container `GTM-MGCH897Z` is loaded first in `<head>` on every funnel page
-  (not `product.html` or `feed/generate.html`). It runs alongside the Pixel and doesn't touch it, so
-  don't add a Meta Pixel tag inside GTM or events would fire twice. The container is empty for now.
+  The Google tag (gtag.js) for GA4 property `G-0NZ3YHLDR2` is loaded first in `<head>` on every
+  funnel page (not `product.html` or `feed/generate.html`). It sends GA4 page views and runs alongside
+  the Pixel without touching it.
 - **Not yet:** confirming deduplication in Events Manager (2.6), domain verification (2.8).
 
 ## What is deliberately missing
@@ -235,4 +235,4 @@ start failing with an auth error, mint a new token and replace `CAPI_ACCESS_TOKE
 - **No server**: static files only; "orders" live in your browser's `sessionStorage`.
 - **No payments**: no card fields, nothing is charged. (Only hashed checkout fields leave the
   browser, with Pixel events.)
-- No analytics or external requests other than the Pixel, the Conversions API and Google Tag Manager (no CDNs, fonts, or remote images).
+- No analytics or external requests other than the Pixel, the Conversions API and the Google tag (GA4) (no CDNs, fonts, or remote images).
